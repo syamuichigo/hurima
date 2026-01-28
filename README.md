@@ -13,24 +13,27 @@
 2. composer install
 3. .env.exampleファイルから.envを作成
 4. .envに以下の環境変数を追加
+```
 DB_CONNECTION=mysql
 DB_HOST=mysql
 DB_PORT=3306
 DB_DATABASE=laravel_db
 DB_USERNAME=laravel_user
 DB_PASSWORD=laravel_pass
+```
 5. .envに以下の環境変数を削除
+``` 
 MAIL_FROM_ADDRESS=null
 ```
-5. アプリケーションキーの作成
+6. アプリケーションキーの作成
 ``` bash
 php artisan key:generate
 ```
-6. マイグレーションの実行
+7. マイグレーションの実行
 ``` bash
 php artisan migrate
 ```
-7. シーディングの実行
+8. シーディングの実行
 ``` bash
 php artisan db:seed
 ```
