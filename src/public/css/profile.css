@@ -27,6 +27,15 @@
     background-color: #d9d9d9;
 }
 
+/* プロフィール画像のサイズ固定＆トリミング */
+.profile-image-section img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
 .image-upload-btn {
     padding: 8px 20px;
     background-color: #ffffff;
@@ -36,11 +45,19 @@
     font-size: 14px;
     cursor: pointer;
     font-weight: 500;
+    display: inline-block;
 }
 
 .image-upload-btn:hover {
     background-color: #fff5f5;
 }
+
+.avatar-input {
+    display: none;
+}
+
+/* 注意: CSSのみでは画像プレビュー機能は実現できません。
+   ファイル選択後は「更新する」ボタンを押すと、サーバー側で画像が更新され、次回表示時に新しい画像が表示されます。 */
 
 .profile-form {
     display: flex;
@@ -65,7 +82,7 @@
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     font-size: 14px;
-    color: #999;
+    color: #333;
     background-color: #ffffff;
 }
 
@@ -89,4 +106,11 @@
 
 .submit-btn:hover {
     background-color: #ff5252;
+}
+
+.error-message {
+    color: #ff0000;
+    font-size: 20px;
+    margin-top: 5px;
+    display: block;
 }

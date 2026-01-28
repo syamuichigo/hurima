@@ -52,6 +52,13 @@ input[type="password"]:focus {
     border-color: #ff6b6b;
 }
 
+.error-message {
+    color: #ff0000;
+    font-size: 20px;
+    margin-top: 6px;
+    display: block;
+}
+
 .login-button {
     width: 100%;
     padding: 14px;

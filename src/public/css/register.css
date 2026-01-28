@@ -32,19 +32,49 @@ label {
     color: #333;
 }
 
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"] {
     width: 100%;
-    padding: 12px 15px;
+    padding: 12px 45px 12px 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 15px;
 }
 
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.password-toggle-icon {
+    font-size: 18px;
+    user-select: none;
+}
+
 input:focus {
     outline: none;
     border-color: #667eea;
+}
+
+.error-message {
+    color: #ff0000;
+    font-size: 20px;
+    margin-top: 5px;
+    display: block;
 }
 
 .submit-btn {

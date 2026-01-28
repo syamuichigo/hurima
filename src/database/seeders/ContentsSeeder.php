@@ -15,89 +15,99 @@ class ContentsSeeder extends Seeder
     public function run()
     {
         DB::table('contents')->insert([
-            'image' => 'storage/images/Clock.jpg',
+            'category_id' => 12, // アクセサリー
+            'image' => 'storage/image/Clock.jpg',
             'name' => '腕時計',
             'brand' => 'Rolax',
             'price' => 15000,
-            'detail' => 'スタイリッシュなデザインのメンズ腕時計',
-            'info' => '良好',
+            'info' => 'スタイリッシュなデザインのメンズ腕時計',
+            'condition_id' => 1,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/HDD.jpg',
+            'category_id' => 2, // 家電
+            'image' => 'storage/image/HDD.jpg',
             'name' => 'HDD',
             'brand' => '西芝',
             'price' => 5000,
-            'detail' => '高速で信頼性ンの高いハードディスク',
-            'info' => '目立った傷や汚れなし',
+            'info' => '高速で信頼性ンの高いハードディスク',
+            'condition_id' => 2,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Onion.jpg',
+            'category_id' => 10, // キッチン
+            'image' => 'storage/image/Onion.jpg',
             'name' => '玉ねぎ３束',
             'brand' => 'なし',
             'price' => 300,
-            'detail' => '新鮮な玉ねぎ３束のセット',
-            'info' => 'やや傷や汚れあり',
+            'info' => '新鮮な玉ねぎ３束のセット',
+            'condition_id' => 3,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Shoes.jpg',
+            'category_id' => 1, // ファッション
+            'image' => 'storage/image/Shoes.jpg',
             'name' => '革靴',
             'price' => 4000,
-            'detail' => 'クラシックなデザインの革靴',
-            'info' => '状態が悪い',
+            'info' => 'クラシックなデザインの革靴',
+            'condition_id' => 4,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Pc.jpg',
+            'category_id' => 2, // 家電
+            'image' => 'storage/image/Pc.jpg',
             'name' => 'ノートPC',
             'price' => 45000,
-            'detail' => '高性能なノートパソコン',
-            'info' => '良好',
+            'info' => '高性能なノートパソコン',
+            'condition_id' => 1,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Mic.jpg',
+            'category_id' => 2, // 家電
+            'image' => 'storage/image/Mic.jpg',
             'name' => 'マイク',
             'brand' => 'なし',
             'price' => 8000,
-            'detail' => '高音質のレコーディング用マイク',
-            'info' => '目立った傷や汚れなし',
+            'info' => '高音質のレコーディング用マイク',
+            'condition_id' => 2,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Bag.jpg',
+            'category_id' => 1, // ファッション
+            'image' => 'storage/image/bag.jpg',
             'name' => 'ショルダーバッグ',
             'price' => 3500,
-            'detail' => 'おしゃれなショルダーバッグ',
-            'info' => 'やや傷や汚れあり',
+            'info' => 'おしゃれなショルダーバッグ',
+            'condition_id' => 3,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Tumbler.jpg',
+            'category_id' => 10, // キッチン
+            'image' => 'storage/image/Tumbler.jpg',
             'name' => 'タンブラー',
             'brand' => 'なし',
             'price' => 500,
-            'detail' => '使いやすいタンブラー',
-            'info' => '状態が悪い',
+            'info' => '使いやすいタンブラー',
+            'condition_id' => 4,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Mill.jpg',
+            'category_id' => 10, // キッチン
+            'image' => 'storage/image/Mill.jpg',
             'name' => 'コーヒーミル',
             'brand' => 'Starbacks',
             'price' => 4000,
-            'detail' => '手動のコーヒーミル',
-            'info' => '良好',
+            'info' => '手動のコーヒーミル',
+            'condition_id' => 1,
         ]);
 
         DB::table('contents')->insert([
-            'image' => 'storage/images/Make.jpg',
+            'category_id' => 6, // コスメ
+            'image' => 'storage/image/Make.jpg',
             'name' => 'マイクセット',
             'price' => 2500,
-            'detail' => '便利なメイクアップセット',
-            'info' => '目立った傷や汚れなし',
+            'info' => '便利なメイクアップセット',
+            'condition_id' => 2,
         ]);
     }
 }

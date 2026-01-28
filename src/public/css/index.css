@@ -1,5 +1,5 @@
 
-nav {
+.sub-nav {
     background-color: white;
     padding: 20px 40px;
     border-bottom: 1px solid #e0e0e0;
@@ -10,28 +10,124 @@ nav {
     gap: 40px;
 }
 
-.nav-tabs a {
+.nav-tabs .tab-label {
     color: #666;
-    text-decoration: none;
+    text-decoration: none; /* label なので実際の下線は出ないがデザイン用 */
     font-size: 16px;
     padding-bottom: 5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
 }
 
-.nav-tabs a.active {
+.tab-radio {
+    display: none;
+}
+
+#tab-recommended:checked ~ .sub-nav .tab-label[for="tab-recommended"],
+#tab-mylist:checked ~ .sub-nav .tab-label[for="tab-mylist"] {
     color: #e74c3c;
-    border-bottom: 2px solid #e74c3c;
+    border-bottom-color: #e74c3c;
 }
 
 main {
     padding: 40px;
+    /* 画面の幅は変えずに（元のまま） */
     width: 1200px;
     margin: 0 auto;
+    overflow: hidden;
+}
+
+.slider-container {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.slider-wrapper {
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    cursor: grab;
+}
+
+.slider-wrapper:active {
+    cursor: grabbing;
+}
+
+.slider-panel {
+    min-width: 100%;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* ラジオボタンに応じて横スライドさせる */
+#tab-recommended:checked ~ main .slider-wrapper {
+    transform: translateX(0);
+}
+
+#tab-mylist:checked ~ main .slider-wrapper {
+    transform: translateX(-100%);
 }
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
+    /* 画面幅内で一行4件表示 */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* ページネーション共通スタイル */
+.pagination-wrapper {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    gap: 8px;
+    padding: 0;
+}
+
+.pagination li a,
+.pagination li span {
+    display: inline-block;
+    min-width: 32px;
+    padding: 6px 10px;
+    border-radius: 9999px;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    text-decoration: none;
+    background-color: #fff;
+}
+
+.pagination li.active span {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+    color: #fff;
+}
+
+.pagination li.disabled span {
+    color: #bbb;
+    background-color: #fafafa;
+    cursor: default;
+}
+
+.pagination li a:hover {
+    background-color: #fff5f5;
+}
+
+/* Laravelのデフォルトページネーション（.page-link）がある場合の上書き */
+.pagination .page-link {
+    min-width: 32px;
+    padding: 6px 10px;
+    border-radius: 9999px;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+    line-height: 1.2;
 }
 
 .product-card {
@@ -39,21 +135,68 @@ main {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: #d0d0d0;
 }
 
 .product-image {
     width: 100%;
-    aspect-ratio: 1;
-    background-color: #d0d0d0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #666;
-    font-size: 18px;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sold-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: red;
+    color: white;
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
 }
 
 .product-name {
     padding: 15px;
     font-size: 14px;
     color: #333;
+}
+
+.empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 16px;
+}
+
+.search-results-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.search-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.search-count {
+    font-size: 14px;
+    color: #666;
 }
