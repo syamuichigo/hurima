@@ -97,7 +97,13 @@
                             <div class="comment-header">
                                 <div class="comment-user-icon">
                                     @if (optional($comment->user->profile)->image)
-                                        <img src="{{ asset($comment->user->profile->image) }}" alt="ユーザーアイコン">
+                                        @php
+                                            $profileImage = optional($comment->user->profile)->image;
+                                            if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
+                                                $profileImage = 'storage/' . $profileImage;
+                                            }
+                                        @endphp
+                                        <img src="{{ asset($profileImage) }}" alt="ユーザーアイコン">
                                     @else
                                         <span>U</span>
                                     @endif

@@ -10,7 +10,13 @@
     <div class="profile-section">
         <div class="avatar">
             @if(!empty(optional($user->profile)->image))
-                <img src="{{ asset($user->profile->image) }}" alt="プロフィール画像">
+                @php
+                    $profileImage = optional($user->profile)->image;
+                    if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
+                        $profileImage = 'storage/' . $profileImage;
+                    }
+                @endphp
+                <img src="{{ asset($profileImage) }}" alt="プロフィール画像">
             @endif
         </div>
         <h1 class="username">

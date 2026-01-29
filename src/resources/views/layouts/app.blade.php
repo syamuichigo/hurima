@@ -15,7 +15,14 @@
         <div class="header-container">
             <div class="logo">
                 <a href="/" class="logo-link">
-                    <img src="{{ asset('storage/image/COACHTECHヘッダーロゴ.png') }}" alt="COACHTECHヘッダーロゴ" class="logo-img">
+                    @php
+                        $logoPath = 'storage/image/COACHTECHヘッダーロゴ.png';
+                        $pathParts = explode('/', $logoPath);
+                        $filename = end($pathParts);
+                        $dirPath = 'storage/image/';
+                        $encodedPath = $dirPath . rawurlencode($filename);
+                    @endphp
+                    <img src="{{ asset($encodedPath) }}" alt="COACHTECHヘッダーロゴ" class="logo-img">
                 </a>
             </div>
             @unless(request()->is('register') || request()->is('login') || request()->is('login1'))

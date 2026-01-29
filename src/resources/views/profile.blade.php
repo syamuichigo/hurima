@@ -15,7 +15,13 @@
         <div class="profile-image-section">
             <div id="profile-image-preview">
                 @if(optional($user->profile)->image)
-                    <img src="{{ asset($user->profile->image) }}" alt="プロフィール画像" id="profile-image">
+                    @php
+                        $profileImage = optional($user->profile)->image;
+                        if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
+                            $profileImage = 'storage/' . $profileImage;
+                        }
+                    @endphp
+                    <img src="{{ asset($profileImage) }}" alt="プロフィール画像" id="profile-image">
                 @else
                     <div class="profile-image-placeholder" id="profile-image-placeholder"></div>
                 @endif
