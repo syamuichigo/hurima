@@ -42,7 +42,7 @@ php artisan db:seed
 - Laravel 8.75
 - MySQL 8.0.26
 ## ER図
-![ER図](src/storage/app/public/image/er.png)
+![ER図](er.png)
 
 ## テストユーザー情報
 - name : test
