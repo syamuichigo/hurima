@@ -262,7 +262,173 @@ class ContentController extends Controller
             'info'       => $content->info ?? '',
         ]);
 
-        return redirect('/thanks')->with('success', 'ご購入ありがとうございました');
+        $paymentMethod = $request->input('payment_method');
+        if ($paymentMethod === 'クレジットカード') {
+            return redirect()->route('purchase.stripe.checkout.get', [
+                'content_id' => $content->id,
+                'payment_method' => 'card'
+            ]);
+        }
+
+        // コンビニ払いの場合もStripe Checkoutにリダイレクト
+        if ($paymentMethod === 'コンビニ払い') {
+            return redirect()->route('purchase.stripe.checkout.get', [
+                'content_id' => $content->id,
+                'payment_method' => 'konbini'
+            ]);
+        }
+
+        return redirect()->back()
+            ->withInput()
+            ->with('error', '支払い方法が正しく選択されていません');
+    }
+
+    public function createStripeCheckout(Request $request, $content_id = null)
+    {
+        $contentId = $content_id ?? $request->input('content_id');
+        $paymentMethodType = $request->query('payment_method', $request->input('payment_method', 'card'));
+        $content = Content::where('id', $contentId)->firstOrFail();
+        $user = auth()->user();
+
+        if (!$user->address) {
+            return redirect('/address?content_id=' . $content->id)
+                ->with('error', '購入には配送先の登録が必要です');
+        }
+
+        $stripeSecret = config('services.stripe.secret');
+        if (!$stripeSecret || $stripeSecret === '<your_secret_key>') {
+            return redirect()->back()->with('error', 'StripeのAPIキーが正しく設定されていません');
+        }
+
+        if (!preg_match('/^sk_(test|live)_[a-zA-Z0-9]{24,}$/', $stripeSecret)) {
+            return redirect()->back()->with('error', 'StripeのAPIキーの形式が正しくありません');
+        }
+
+        Stripe::setApiKey($stripeSecret);
+
+        try {
+            $imageUrl = $content->image;
+            if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $imageUrl = $request->getSchemeAndHttpHost() . '/' . $imageUrl;
+            }
+
+            $paymentMethodTypes = $paymentMethodType === 'konbini' ? ['konbini'] : ['card'];
+            $successUrl = url(route('purchase.stripe.success', [], false)) . '?content_id=' . $content->id . '&session_id={CHECKOUT_SESSION_ID}';
+            $cancelUrl = url(route('purchase.stripe.cancel', [], false)) . '?content_id=' . $content->id;
+
+            $checkoutParams = [
+                'payment_method_types' => $paymentMethodTypes,
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'jpy',
+                        'product_data' => [
+                            'name' => $content->name,
+                            'images' => [$imageUrl],
+                        ],
+                        'unit_amount' => $content->price,
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => $successUrl,
+                'cancel_url' => $cancelUrl,
+                'metadata' => [
+                    'user_id' => auth()->id(),
+                    'content_id' => $content->id,
+                    'payment_method' => $paymentMethodType === 'konbini' ? 'コンビニ払い' : 'クレジットカード',
+                ],
+            ];
+
+            if ($paymentMethodType === 'konbini') {
+                $checkoutParams['payment_method_options'] = [
+                    'konbini' => [
+                        'expires_after_days' => 3,
+                    ],
+                ];
+            }
+
+            $checkout_session = Session::create($checkoutParams);
+
+            return redirect($checkout_session->url);
+        } catch (\Stripe\Exception\AuthenticationException $e) {
+            return redirect()->back()->with('error', 'StripeのAPIキーが無効です。Stripeダッシュボードから正しいAPIキーを取得して、.envファイルに設定してください。');
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            return redirect()->back()->with('error', 'Stripe APIエラー: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', '支払い処理の開始に失敗しました: ' . $e->getMessage());
+        }
+    }
+
+    public function stripeSuccess(Request $request)
+    {
+        $sessionId = $request->query('session_id') ?? $request->input('session_id');
+
+        if (!$sessionId) {
+            return redirect('/')->with('error', 'セッション情報が見つかりません');
+        }
+
+        $stripeSecret = config('services.stripe.secret');
+        if (!$stripeSecret) {
+            return redirect('/')->with('error', 'StripeのAPIキーが設定されていません。管理者にお問い合わせください。');
+        }
+
+        Stripe::setApiKey($stripeSecret);
+
+        try {
+            $session = Session::retrieve($sessionId);
+
+            if ($session->payment_status !== 'paid') {
+                $contentId = $session->metadata->content_id ?? $request->query('content_id');
+                return $contentId 
+                    ? redirect()->route('purchase.stripe.cancel', ['content_id' => $contentId])
+                        ->with('error', '支払いが完了していません')
+                    : redirect('/')->with('error', '支払いが完了していません');
+            }
+
+            $contentId = $session->metadata->content_id ?? $request->query('content_id');
+
+            if (!$contentId) {
+                return redirect('/')->with('error', '商品情報が見つかりません');
+            }
+
+            $existingPurchase = Purchase::where('content_id', $contentId)
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if ($existingPurchase) {
+                return redirect()->route('transaction.chat', ['purchaseId' => $existingPurchase->id])
+                    ->with('success', 'ご購入ありがとうございました');
+            }
+
+            $content = Content::where('id', $contentId)->firstOrFail();
+
+            $purchase = Purchase::create([
+                'user_id'    => auth()->id(),
+                'content_id' => $content->id,
+                'image'      => $content->image,
+                'name'       => $content->name,
+                'brand'      => $content->brand ?? '',
+                'price'      => $content->price,
+                'detail'     => $content->info ?? '',
+                'info'       => $content->info ?? '',
+                'status'     => '取引中',
+            ]);
+
+            return redirect()->route('transaction.chat', ['purchaseId' => $purchase->id])
+                ->with('success', 'ご購入ありがとうございました');
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            return redirect('/')->with('error', 'セッション情報が見つかりません: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return redirect('/')->with('error', '支払い確認中にエラーが発生しました: ' . $e->getMessage());
+        }
+    }
+
+    public function stripeCancel(Request $request)
+    {
+        $contentId = $request->input('content_id');
+        return redirect()->route('purchase.show', ['content_id' => $contentId])
+            ->with('error', '支払いがキャンセルされました');
+>>>>>>> 71ece31 (追加機能)
     }
 
     public function thanks()
