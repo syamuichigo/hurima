@@ -81,14 +81,18 @@ php artisan migrate
 - `create_users_table.php`: ユーザー情報（Laravel標準）
 - `create_password_resets_table.php`: パスワードリセット（Laravel標準）
 - `add_two_factor_columns_to_users_table.php`: 2要素認証カラム
-- `add_profile_columns_to_users_table.php`: プロフィール情報をusersに統合
 - `create_categories_table.php`: カテゴリー
-- `create_contents_table.php`: 商品情報（condition文字列、seller_idで出品者管理）
+- `create_condition_table.php`: 商品状態マスタ
+- `create_contents_table.php`: 商品情報（category_id、condition_id）
 - `create_content_category_table.php`: 商品とカテゴリーの中間テーブル
 - `create_comments_table.php`: コメント
-- `create_purchase_table_with_rating.php`: 購入情報（評価カラム統合）
+- `create_purchase_table.php`: 購入情報
+- `add_status_to_purchase_table.php`: 購入ステータス（取引中/完了）
+- `create_listing_table.php`: 出品情報
 - `create_favorites_table.php`: お気に入り
-- `create_messages_table.php`: 取引メッセージ
+- `create_profiles_table.php`: プロフィール
+- `create_transaction_messages_table.php`: 取引メッセージ
+- `create_transaction_ratings_table.php`: 取引評価
 
 既存のデータベースを使用している場合、以下のいずれかの方法でマイグレーションを実行してください：
 - 新規環境の場合: `php artisan migrate` を実行
@@ -111,15 +115,19 @@ php artisan db:seed
 ![ER図](er.png)
 
 ## データベース構成
-- users: ユーザー情報（プロフィール情報を統合: image, name, postcode, address, building）
+- users: ユーザー情報
+- profiles: プロフィール情報（image, name, postcode, address, building）
 - password_resets: パスワードリセット（Laravel標準）
 - categories: カテゴリー情報
-- contents: 商品情報（category_id、seller_id、condition文字列、複数カテゴリはcontent_category経由）
+- condition: 商品状態マスタ
+- contents: 商品情報（category_id、condition_id、複数カテゴリはcontent_category経由）
 - content_category: 商品とカテゴリーの中間テーブル（content_id、category_idに依存）
 - comments: コメント情報（content_id、user_idに依存）
-- purchase: 購入情報（user_id、content_idに依存、status、buyer_rating、seller_ratingで評価を統合）
+- listing: 出品情報（user_id、content_idに依存）
+- purchase: 購入情報（user_id、content_idに依存、status）
 - favorites: お気に入り情報（content_id、user_idに依存）
-- messages: メッセージ情報（purchase_id、user_idに依存、取引中のチャット）
+- transaction_messages: 取引メッセージ（purchase_id、user_idに依存）
+- transaction_ratings: 取引評価（purchase_id、rater_user_id、rated_user_idに依存）
 
 ## テストユーザー情報
 シーディング実行後、以下の3人のテストユーザーが作成されます：
