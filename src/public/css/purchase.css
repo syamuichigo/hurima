@@ -232,3 +232,51 @@
     margin-top: 5px;
     display: block;
 }
+
+@media (max-width: 768px) {
+    .container {
+        padding: 24px 16px;
+    }
+
+    .content-wrapper form {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .left-section {
+        padding: 24px;
+    }
+
+    .product-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .product-image .image-placeholder {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .right-section {
+        width: 100%;
+        position: static;
+        top: auto;
+    }
+}
+
+@media (max-width: 580px) {
+    .left-section {
+        padding: 20px;
+    }
+
+    .summary-box {
+        padding: 20px;
+    }
+
+    .purchase-button {
+        padding: 14px;
+        font-size: 16px;
+    }
+}

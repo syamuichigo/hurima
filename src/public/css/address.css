@@ -91,3 +91,16 @@ label {
     margin-top: 5px;
     display: block;
 }
+
+@media (max-width: 580px) {
+    .container {
+        width: 100%;
+        max-width: 500px;
+        margin: 40px auto;
+        padding: 40px 20px;
+    }
+
+    h1 {
+        margin-bottom: 40px;
+    }
+}

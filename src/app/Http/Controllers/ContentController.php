@@ -428,7 +428,6 @@ class ContentController extends Controller
         $contentId = $request->input('content_id');
         return redirect()->route('purchase.show', ['content_id' => $contentId])
             ->with('error', '支払いがキャンセルされました');
->>>>>>> 71ece31 (追加機能)
     }
 
     public function thanks()

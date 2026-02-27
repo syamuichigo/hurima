@@ -30,9 +30,9 @@
 }
 
 main {
-    padding: 40px;
-    /* 画面の幅は変えずに（元のまま） */
-    width: 1200px;
+    padding: 40px 20px;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     overflow: hidden;
 }
@@ -199,4 +199,39 @@ main {
 .search-count {
     font-size: 14px;
     color: #666;
+}
+
+@media (max-width: 768px) {
+    .sub-nav {
+        padding: 16px 20px;
+    }
+
+    .nav-tabs {
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    main {
+        padding: 24px 16px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 580px) {
+    .nav-tabs {
+        gap: 12px;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sold-badge {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
 }
