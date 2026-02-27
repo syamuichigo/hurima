@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\TransactionChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,4 +56,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // お気に入り・コメント機能
     Route::post('/favorite/toggle', [ContentController::class, 'toggleFavorite']);
     Route::post('/comment/store', [ContentController::class, 'commentStore']);
+
+    // 取引チャット
+    Route::get('/transaction-chat/{purchaseId}', [TransactionChatController::class, 'show'])->name('transaction.chat');
+    Route::post('/transaction-chat/{purchaseId}/message', [TransactionChatController::class, 'storeMessage'])->name('transaction.message.store');
+    Route::put('/transaction-chat/{purchaseId}/message/{messageId}', [TransactionChatController::class, 'updateMessage'])->name('transaction.message.update');
+    Route::delete('/transaction-chat/{purchaseId}/message/{messageId}', [TransactionChatController::class, 'deleteMessage'])->name('transaction.message.delete');
+    Route::post('/transaction-chat/{purchaseId}/rating', [TransactionChatController::class, 'storeRating'])->name('transaction.rating.store');
 });

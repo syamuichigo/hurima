@@ -1,0 +1,278 @@
+/* Basic layout for transaction chat */
+.transaction-chat-container {
+    padding: 24px;
+}
+
+.transaction-chat-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.sidebar {
+    width: 260px;
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.sidebar-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.sidebar-transaction-item {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: #333;
+    text-decoration: none;
+}
+
+.sidebar-transaction-item:hover {
+    background: #f5f5f5;
+}
+
+.sidebar-empty {
+    color: #888;
+    font-size: 14px;
+}
+
+.main-content {
+    flex: 1;
+}
+
+.transaction-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.transaction-user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar img,
+.message-header-avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e0e0e0;
+}
+
+.transaction-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.complete-transaction-button {
+    background: #ff5a5f;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.product-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 16px;
+}
+
+.product-image {
+    width: 96px;
+    height: 96px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-image-placeholder {
+    width: 96px;
+    height: 96px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: #888;
+}
+
+.product-name {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.product-price {
+    color: #ff5a5f;
+    font-weight: 700;
+}
+
+.chat-section {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    background: #fff;
+    padding: 16px;
+    height: 420px;
+    overflow-y: auto;
+}
+
+.message {
+    margin-bottom: 12px;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+.message-bubble {
+    padding: 10px 12px;
+    border-radius: 10px;
+    max-width: 70%;
+    word-break: break-word;
+}
+
+.message-bubble-self {
+    background: #e9f5ff;
+    margin-left: auto;
+}
+
+.message-bubble-other {
+    background: #f3f3f3;
+}
+
+.message-image img {
+    max-width: 220px;
+    border-radius: 6px;
+    margin-top: 6px;
+}
+
+.message-actions {
+    display: flex;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.message-action-link {
+    border: none;
+    background: none;
+    color: #0070f3;
+    cursor: pointer;
+}
+
+.message-input-section {
+    margin-top: 12px;
+}
+
+.message-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.message-input {
+    flex: 1;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.image-upload-button,
+.message-send-button {
+    border: none;
+    background: #333;
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.message-send-button svg {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
+
+.alert-error {
+    background: #ffe5e5;
+    color: #b00020;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.rating-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.rating-modal.show {
+    display: flex;
+}
+
+.rating-modal-content {
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    width: 360px;
+    text-align: center;
+}
+
+.rating-stars {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 12px 0;
+}
+
+.rating-stars input[type="radio"] {
+    display: none;
+}
+
+.rating-stars label.star {
+    color: #d0d0d0;
+    cursor: pointer;
+}
+
+.rating-submit-button {
+    background: #ff5a5f;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}

@@ -26,10 +26,26 @@ class Purchase extends Model
         'price',
         'detail',
         'info',
+        'status',
     ];
+
+    public function buyer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public function content()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Content::class, 'content_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(TransactionMessage::class, 'purchase_id');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(TransactionRating::class, 'purchase_id');
     }
 }
