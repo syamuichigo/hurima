@@ -1,3 +1,6 @@
 *
 !.gitignore
-/image/*
+# シーダー用・静的アセット画像はGitに含める
+!image/
+!image/*.jpg
+!image/*.png
