@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\TransactionChatController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +25,12 @@ Route::get('/', [ContentController::class, 'index']);
 Route::get('/search', [ContentController::class, 'search']);
 Route::get('/item/{id}', [ContentController::class, 'item']);
 
-// メール認証関連（認証済みだがメール認証未完了のユーザーもアクセス可能）
+// メール認証関連
+// 認証リンク（未ログインでも動作するようカスタムコントローラーを使用）
+Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
+    ->name('verification.verify');
+
+// 認証済みだがメール認証未完了のユーザーがページ上のボタンから認証する場合
 Route::middleware('auth')->group(function () {
     Route::post('/email/verify-complete', [ContentController::class, 'verifyEmail'])->name('email.verify.complete');
 });
@@ -47,6 +53,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/purchase', [ContentController::class, 'purchase_buy'])->name('purchase.show');
     Route::post('/purchase', [ContentController::class, 'purchase_store'])->name('purchase.store');
     Route::get('/purchase/address/{id}', [ContentController::class, 'purchaseFromAddress'])->name('purchase.from.address');
+
+    // Stripe決済関連
+    Route::get('/purchase/stripe/checkout/{content_id?}', [ContentController::class, 'createStripeCheckout'])->name('purchase.stripe.checkout.get');
+    Route::get('/purchase/stripe/success', [ContentController::class, 'stripeSuccess'])->name('purchase.stripe.success');
+    Route::get('/purchase/stripe/cancel', [ContentController::class, 'stripeCancel'])->name('purchase.stripe.cancel');
     Route::get('/thanks', [ContentController::class, 'thanks']);
     
     // 初回プロフィール登録ページ

@@ -33,7 +33,7 @@
                         @if(isset($otherUser) && $otherUser && $otherUser->image)
                             @php
                                 $profileImage = $otherUser->image;
-                                if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
+                                if ($profileImage && strpos($profileImage, 'storage/') !== 0 && strpos($profileImage, 'images/') !== 0) {
                                     $profileImage = 'storage/' . $profileImage;
                                 }
                             @endphp
@@ -85,9 +85,9 @@
                                                 @if($msg->user && $msg->user->image)
                                                     @php
                                                         $profileImage = $msg->user->image;
-                                                        if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
-                                                            $profileImage = 'storage/' . $profileImage;
-                                                        }
+if ($profileImage && strpos($profileImage, 'storage/') !== 0 && strpos($profileImage, 'images/') !== 0) {
+                                                        $profileImage = 'storage/' . $profileImage;
+                                                    }
                                                     @endphp
                                                     <img src="{{ asset($profileImage) }}" alt="プロフィール画像">
                                                 @else
@@ -129,9 +129,9 @@
                                                 @if($msg->user && $msg->user->image)
                                                     @php
                                                         $profileImage = $msg->user->image;
-                                                        if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
-                                                            $profileImage = 'storage/' . $profileImage;
-                                                        }
+if ($profileImage && strpos($profileImage, 'storage/') !== 0 && strpos($profileImage, 'images/') !== 0) {
+                                                        $profileImage = 'storage/' . $profileImage;
+                                                    }
                                                     @endphp
                                                     <img src="{{ asset($profileImage) }}" alt="プロフィール画像">
                                                 @else

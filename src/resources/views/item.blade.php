@@ -29,12 +29,12 @@
                         @csrf
                         <input type="hidden" name="content_id" value="{{ $content->id }}">
                         <button type="submit" class="icon-btn favorite-btn">
-                            <img src="{{ asset($content->is_favorited ? 'storage/image/ハートロゴ_ピンク.png' : 'storage/image/ハートロゴ_デフォルト.png') }}" alt="♡" class="favorite-icon">
+                            <img src="{{ asset($content->is_favorited ? 'images/ハートロゴ_ピンク.png' : 'images/ハートロゴ_デフォルト.png') }}" alt="♡" class="favorite-icon">
                         </button>
                     </form>
                     @else
                     <label for="login-popup-toggle" class="icon-btn favorite-btn-guest">
-                        <img src="{{ asset('storage/image/ハートロゴ_デフォルト.png') }}" alt="♡">
+                        <img src="{{ asset('images/ハートロゴ_デフォルト.png') }}" alt="♡">
                     </label>
                     @endauth
                     <span class="action-count favorite-count">{{ $content->favorite_count ?? 0 }}</span>
@@ -99,7 +99,7 @@
                                     @if (optional($comment->user->profile)->image)
                                         @php
                                             $profileImage = optional($comment->user->profile)->image;
-                                            if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
+                                            if ($profileImage && strpos($profileImage, 'storage/') !== 0 && strpos($profileImage, 'images/') !== 0) {
                                                 $profileImage = 'storage/' . $profileImage;
                                             }
                                         @endphp

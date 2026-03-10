@@ -17,7 +17,7 @@
                 @if(optional($user->profile)->image)
                     @php
                         $profileImage = optional($user->profile)->image;
-                        if ($profileImage && strpos($profileImage, 'storage/') !== 0) {
+                        if ($profileImage && strpos($profileImage, 'storage/') !== 0 && strpos($profileImage, 'images/') !== 0) {
                             $profileImage = 'storage/' . $profileImage;
                         }
                     @endphp

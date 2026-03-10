@@ -19,6 +19,9 @@ use App\Http\Requests\AddressRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Http\Requests\CommentRequest;
 
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
+
 class ContentController extends Controller
 {
     private function getMyListingContentIds()
@@ -288,9 +291,9 @@ class ContentController extends Controller
         $contentId = $content_id ?? $request->input('content_id');
         $paymentMethodType = $request->query('payment_method', $request->input('payment_method', 'card'));
         $content = Content::where('id', $contentId)->firstOrFail();
-        $user = auth()->user();
+        $profile = Profile::where('user_id', auth()->id())->first();
 
-        if (!$user->address) {
+        if (!$profile || !$profile->address) {
             return redirect('/address?content_id=' . $content->id)
                 ->with('error', '購入には配送先の登録が必要です');
         }
@@ -510,6 +513,11 @@ class ContentController extends Controller
 
     public function setup()
     {
+        // プロフィールが既に登録されている場合はトップページへ
+        if (Profile::where('user_id', auth()->id())->exists()) {
+            return redirect('/')->with('info', 'プロフィールは既に登録されています');
+        }
+
         return view('setup');
     }
 
@@ -560,6 +568,12 @@ class ContentController extends Controller
         }
 
         $user->markEmailAsVerified();
+
+        // プロフィールが既に登録されている場合はトップページへ
+        if (Profile::where('user_id', $user->id)->exists()) {
+            return redirect('/')->with('success', 'メール認証が完了しました');
+        }
+
         return redirect('/setup')->with('success', 'メール認証が完了しました');
     }
 }

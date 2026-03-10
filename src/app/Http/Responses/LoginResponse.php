@@ -20,8 +20,17 @@ class LoginResponse implements LoginResponseContract
         if ($user && !$user->hasVerifiedEmail()) {
             return redirect()->route('verification.notice');
         }
+
+        // プロフィールが登録されている場合はトップページへ
+        if ($user && $user->profile) {
+            return redirect(RouteServiceProvider::HOME);
+        }
+
+        // プロフィール未登録の場合は初回設定画面へ
+        if ($user) {
+            return redirect('/setup');
+        }
         
-        // メール認証が完了している場合はホームへ
         return redirect(RouteServiceProvider::HOME);
     }
 }

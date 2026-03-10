@@ -16,7 +16,7 @@ class ContentsSeeder extends Seeder
     {
         DB::table('contents')->insert([
             'category_id' => 12, // アクセサリー
-            'image' => 'storage/image/Clock.jpg',
+            'image' => 'images/sample/Clock.jpg',
             'name' => '腕時計',
             'brand' => 'Rolax',
             'price' => 15000,
@@ -26,7 +26,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 2, // 家電
-            'image' => 'storage/image/HDD.jpg',
+            'image' => 'images/sample/HDD.jpg',
             'name' => 'HDD',
             'brand' => '西芝',
             'price' => 5000,
@@ -36,7 +36,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 10, // キッチン
-            'image' => 'storage/image/Onion.jpg',
+            'image' => 'images/sample/Onion.jpg',
             'name' => '玉ねぎ３束',
             'brand' => 'なし',
             'price' => 300,
@@ -46,7 +46,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 1, // ファッション
-            'image' => 'storage/image/Shoes.jpg',
+            'image' => 'images/sample/Shoes.jpg',
             'name' => '革靴',
             'price' => 4000,
             'info' => 'クラシックなデザインの革靴',
@@ -55,7 +55,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 2, // 家電
-            'image' => 'storage/image/Pc.jpg',
+            'image' => 'images/sample/Pc.jpg',
             'name' => 'ノートPC',
             'price' => 45000,
             'info' => '高性能なノートパソコン',
@@ -64,7 +64,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 2, // 家電
-            'image' => 'storage/image/Mic.jpg',
+            'image' => 'images/sample/Mic.jpg',
             'name' => 'マイク',
             'brand' => 'なし',
             'price' => 8000,
@@ -74,7 +74,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 1, // ファッション
-            'image' => 'storage/image/bag.jpg',
+            'image' => 'images/sample/bag.jpg',
             'name' => 'ショルダーバッグ',
             'price' => 3500,
             'info' => 'おしゃれなショルダーバッグ',
@@ -83,7 +83,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 10, // キッチン
-            'image' => 'storage/image/Tumbler.jpg',
+            'image' => 'images/sample/Tumbler.jpg',
             'name' => 'タンブラー',
             'brand' => 'なし',
             'price' => 500,
@@ -93,7 +93,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 10, // キッチン
-            'image' => 'storage/image/Mill.jpg',
+            'image' => 'images/sample/Mill.jpg',
             'name' => 'コーヒーミル',
             'brand' => 'Starbacks',
             'price' => 4000,
@@ -103,7 +103,7 @@ class ContentsSeeder extends Seeder
 
         DB::table('contents')->insert([
             'category_id' => 6, // コスメ
-            'image' => 'storage/image/Make.jpg',
+            'image' => 'images/sample/Make.jpg',
             'name' => 'マイクセット',
             'price' => 2500,
             'info' => '便利なメイクアップセット',

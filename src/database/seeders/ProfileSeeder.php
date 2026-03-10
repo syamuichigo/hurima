@@ -17,7 +17,7 @@ class ProfileSeeder extends Seeder
         DB::table('profiles')->insert([
             [
                 'user_id' => 1,
-                'image' => 'image/top.jpg',
+                'image' => 'storage/image/ruu.jpg',
                 'name' => 'user1',
                 'postcode' => '123-4567',
                 'address' => '東京都テスト町1-5-1',
@@ -25,7 +25,7 @@ class ProfileSeeder extends Seeder
             ],
             [
                 'user_id' => 2,
-                'image' => 'image/top.jpg',
+                'image' => 'storage/image/sui.jpg',
                 'name' => 'user2',
                 'postcode' => '234-5678',
                 'address' => '東京都テスト町2-3-4',
@@ -33,7 +33,7 @@ class ProfileSeeder extends Seeder
             ],
             [
                 'user_id' => 3,
-                'image' => 'image/top.jpg',
+                'image' => 'storage/image/tora.jpg',
                 'name' => 'user3',
                 'postcode' => '345-6789',
                 'address' => '東京都テスト町3-7-8',

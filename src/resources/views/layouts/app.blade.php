@@ -16,10 +16,10 @@
             <div class="logo">
                 <a href="/" class="logo-link">
                     @php
-                        $logoPath = 'storage/image/COACHTECHヘッダーロゴ.png';
+                        $logoPath = 'images/COACHTECHヘッダーロゴ.png';
                         $pathParts = explode('/', $logoPath);
                         $filename = end($pathParts);
-                        $dirPath = 'storage/image/';
+                        $dirPath = 'images/';
                         $encodedPath = $dirPath . rawurlencode($filename);
                     @endphp
                     <img src="{{ asset($encodedPath) }}" alt="COACHTECHヘッダーロゴ" class="logo-img">

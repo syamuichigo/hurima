@@ -103,6 +103,13 @@ php artisan migrate
 php artisan db:seed
 ```
 
+9. ストレージリンクの作成（ユーザーが商品画像をアップロードする場合に必要）
+```bash
+php artisan storage:link
+```
+
+**画像について**: シーダーで作成されるダミー商品の画像は `public/images/sample/` に含まれており、GitHubでクローンした直後から表示されます。新規出品時の画像アップロードには、上記のストレージリンクが必要です。
+
 ## 使用技術(実行環境)
 - PHP 7.4-fpm
 - Laravel 8.75
