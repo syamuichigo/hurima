@@ -7,7 +7,10 @@ use App\Models\Purchase;
 use App\Models\TransactionMessage;
 use App\Models\TransactionRating;
 use App\Models\User;
+use App\Models\TransactionNotification;
+use App\Mail\RatingReceivedMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class TransactionChatController extends Controller
@@ -50,6 +53,7 @@ class TransactionChatController extends Controller
         $currentUserId = auth()->id();
 
         $isBuyer = $purchase->user_id === $currentUserId;
+        $isSeller = $sellerId === $currentUserId;
         $otherUserId = $isBuyer ? $sellerId : $purchase->user_id;
         $otherUser = $otherUserId ? User::with('profile')->find($otherUserId) : null;
         $ratedUserId = $otherUserId;
@@ -59,15 +63,27 @@ class TransactionChatController extends Controller
             ->orderBy('created_at')
             ->get();
 
+        // この取引の未読通知を既読にする
+        TransactionNotification::where('user_id', $currentUserId)
+            ->where('purchase_id', $purchase->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
         $otherTransactions = $this->userTransactionsQuery($currentUserId)
             ->where('id', '!=', $purchase->id)
+            ->where('status', '!=', '完了')
             ->get();
 
-        $buyerCanComplete = $isBuyer && !TransactionRating::where('purchase_id', $purchase->id)
+        $currentUserHasRated = TransactionRating::where('purchase_id', $purchase->id)
             ->where('rater_user_id', $currentUserId)
             ->exists();
-
-        $shouldShowRatingModal = false;
+        $buyerHasRated = TransactionRating::where('purchase_id', $purchase->id)
+            ->where('rater_user_id', $purchase->user_id)
+            ->exists();
+        $buyerCanComplete = $isBuyer && !$currentUserHasRated;
+        $sellerCanComplete = $isSeller && !$currentUserHasRated;
+        // 出品者が購入者の評価送信後にチャットを開いたときのみモーダルを自動表示
+        $shouldAutoOpenRatingModal = $sellerCanComplete && $buyerHasRated;
 
         return view('transaction-chat', compact(
             'purchase',
@@ -77,7 +93,8 @@ class TransactionChatController extends Controller
             'ratedUserId',
             'isBuyer',
             'buyerCanComplete',
-            'shouldShowRatingModal'
+            'sellerCanComplete',
+            'shouldAutoOpenRatingModal'
         ));
     }
 
@@ -108,6 +125,17 @@ class TransactionChatController extends Controller
             'message' => $request->input('message'),
             'image' => $imagePath,
         ]);
+
+        // 送信先（相手）に新着メッセージ通知を作成
+        $sellerId = $this->getSellerId($purchase);
+        $recipientId = (auth()->id() === $purchase->user_id) ? $sellerId : $purchase->user_id;
+        if ($recipientId) {
+            TransactionNotification::create([
+                'user_id' => $recipientId,
+                'purchase_id' => $purchase->id,
+                'type' => 'new_message',
+            ]);
+        }
 
         return redirect()->route('transaction.chat', ['purchaseId' => $purchase->id]);
     }
@@ -157,6 +185,22 @@ class TransactionChatController extends Controller
         return redirect()->route('transaction.chat', ['purchaseId' => $purchase->id]);
     }
 
+    private function bothPartiesRated(Purchase $purchase): bool
+    {
+        $sellerId = $this->getSellerId($purchase);
+        $buyerId = $purchase->user_id;
+        if (!$sellerId || !$buyerId) {
+            return false;
+        }
+        $buyerRated = TransactionRating::where('purchase_id', $purchase->id)
+            ->where('rater_user_id', $buyerId)
+            ->exists();
+        $sellerRated = TransactionRating::where('purchase_id', $purchase->id)
+            ->where('rater_user_id', $sellerId)
+            ->exists();
+        return $buyerRated && $sellerRated;
+    }
+
     public function storeRating(Request $request, $purchaseId)
     {
         $purchase = Purchase::findOrFail($purchaseId);
@@ -164,8 +208,9 @@ class TransactionChatController extends Controller
         $currentUserId = auth()->id();
 
         $isBuyer = $purchase->user_id === $currentUserId;
-        if (!$isBuyer) {
-            return redirect()->back()->with('error', '評価は購入者のみ送信できます');
+        $isSeller = $sellerId === $currentUserId;
+        if (!$isBuyer && !$isSeller) {
+            return redirect()->back()->with('error', 'この取引の評価権限がありません');
         }
 
         $request->validate([
@@ -173,7 +218,7 @@ class TransactionChatController extends Controller
             'rated_user_id' => 'required|integer|exists:users,id',
         ]);
 
-        $ratedUserId = $sellerId;
+        $ratedUserId = $isBuyer ? $sellerId : $purchase->user_id;
         if (!$ratedUserId || (int)$request->input('rated_user_id') !== (int)$ratedUserId) {
             return redirect()->back()->with('error', '評価対象のユーザー情報が正しくありません');
         }
@@ -192,10 +237,26 @@ class TransactionChatController extends Controller
             'rating' => (int)$request->input('rating'),
         ]);
 
-        $purchase->status = '完了';
-        $purchase->save();
+        // 購入者が出品者を評価した場合のみ通知・メール送信（出品者が購入者を評価した場合は通知しない）
+        if ($isBuyer) {
+            TransactionNotification::create([
+                'user_id' => $ratedUserId,
+                'purchase_id' => $purchase->id,
+                'type' => 'rating_received',
+            ]);
 
-        return redirect()->route('transaction.chat', ['purchaseId' => $purchase->id])
-            ->with('success', '評価を送信しました');
+            $ratedUser = User::find($ratedUserId);
+            $raterUser = User::find($currentUserId);
+            if ($ratedUser && $raterUser) {
+                Mail::to($ratedUser->email)->send(new RatingReceivedMail($ratedUser, $raterUser, (int)$request->input('rating')));
+            }
+        }
+
+        if ($this->bothPartiesRated($purchase)) {
+            $purchase->status = '完了';
+            $purchase->save();
+        }
+
+        return redirect('/');
     }
 }

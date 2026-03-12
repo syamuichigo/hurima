@@ -12,6 +12,8 @@ use App\Models\Favorite;
 use App\Models\Profile;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\TransactionRating;
+use App\Models\TransactionNotification;
 
 use App\Http\Requests\SellRequest;
 use App\Http\Requests\ProfileRequest;
@@ -42,6 +44,27 @@ class ContentController extends Controller
         foreach ($contents as $content) {
             $content->is_sold = in_array($content->id, $soldContentIds);
         }
+    }
+
+    private function getUnratedTransactionCount(int $userId, $sellerContentIds): int
+    {
+        $purchases = Purchase::where(function ($q) use ($userId, $sellerContentIds) {
+            $q->where('user_id', $userId)
+                ->orWhereIn('content_id', $sellerContentIds);
+        })
+            ->where('status', '!=', '完了')
+            ->get();
+
+        $count = 0;
+        foreach ($purchases as $p) {
+            $hasRated = TransactionRating::where('purchase_id', $p->id)
+                ->where('rater_user_id', $userId)
+                ->exists();
+            if (!$hasRated) {
+                $count++;
+            }
+        }
+        return $count;
     }
 
     public function index()
@@ -139,9 +162,61 @@ class ContentController extends Controller
             }
         }
         
+        $sellerContentIds = Listing::where('user_id', auth()->user()->id)->pluck('content_id');
+
+        // 購入した商品: 完了（双方評価済み）の取引のみ
         $purchases = Purchase::where('user_id', auth()->user()->id)
+            ->where('status', '完了')
+            ->with('content')
+            ->orderByDesc('created_at')
             ->paginate(20, ['*'], 'purchases_page');
-        return view('mypage', compact('users', 'listings', 'purchases'));
+
+        // 取引中: 未完了の取引（status != 完了）
+        $transactions = Purchase::where(function ($q) use ($sellerContentIds) {
+            $q->where('user_id', auth()->user()->id)
+                ->orWhereIn('content_id', $sellerContentIds);
+        })
+            ->where('status', '!=', '完了')
+            ->with('content')
+            ->orderByDesc('created_at')
+            ->paginate(20, ['*'], 'transactions_page');
+
+        foreach ($transactions as $tx) {
+            $tx->is_buyer = $tx->user_id === auth()->id();
+        }
+
+        // 平均評価（自分が評価されたもの）
+        $avgRating = TransactionRating::where('rated_user_id', auth()->id())
+            ->avg('rating');
+        $avgRating = $avgRating ? round($avgRating, 1) : null;
+        $ratingCount = TransactionRating::where('rated_user_id', auth()->id())->count();
+
+        // バッジ: 取引中の未読通知数のみ
+        $transactingBadgeCount = TransactionNotification::where('user_id', auth()->id())
+            ->whereNull('read_at')
+            ->count();
+
+        // 取引ごとの未読通知数（取引カード用）
+        $purchaseIds = $transactions->pluck('id');
+        $unreadByPurchase = $purchaseIds->isEmpty()
+            ? collect()
+            : TransactionNotification::where('user_id', auth()->id())
+                ->whereNull('read_at')
+                ->whereIn('purchase_id', $purchaseIds)
+                ->selectRaw('purchase_id, count(*) as count')
+                ->groupBy('purchase_id')
+                ->pluck('count', 'purchase_id');
+
+        return view('mypage', compact(
+            'users',
+            'listings',
+            'purchases',
+            'transactions',
+            'avgRating',
+            'ratingCount',
+            'transactingBadgeCount',
+            'unreadByPurchase'
+        ));
     }
 
     public function sell()

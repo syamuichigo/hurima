@@ -62,10 +62,13 @@ STRIPE_SECRET=<your_secret_key>
 2. ダッシュボードの「開発者」→「APIキー」から公開可能キーとシークレットキーを取得
 3. テスト環境では公開可能キーが「pk_test_」、シークレットキーが「sk_test_」で始まることを確認
 
-5. .envファイルから以下の環境変数を削除（存在する場合）
+5. メール設定（ローカル開発ではMailpitを使用・Dockerに同梱）
 ```env
-MAIL_FROM_ADDRESS=null
+MAIL_MAILER=mailpit
+MAIL_FROM_ADDRESS=noreply@example.com
+MAIL_FROM_NAME="${APP_NAME}"
 ```
+メールは http://localhost:8026 で確認できます。Mailtrapなどの外部SMTPを使う場合は [MAILTRAP_SETUP.md](MAILTRAP_SETUP.md) を参照してください。
 
 6. アプリケーションキーの生成
 ```bash
@@ -93,6 +96,7 @@ php artisan migrate
 - `create_profiles_table.php`: プロフィール
 - `create_transaction_messages_table.php`: 取引メッセージ
 - `create_transaction_ratings_table.php`: 取引評価
+- `create_transaction_notifications_table.php`: 取引通知
 
 既存のデータベースを使用している場合、以下のいずれかの方法でマイグレーションを実行してください：
 - 新規環境の場合: `php artisan migrate` を実行
@@ -135,6 +139,7 @@ php artisan storage:link
 - favorites: お気に入り情報（content_id、user_idに依存）
 - transaction_messages: 取引メッセージ（purchase_id、user_idに依存）
 - transaction_ratings: 取引評価（purchase_id、rater_user_id、rated_user_idに依存）
+- transaction_notifications: 取引通知（user_id、purchase_id、type、read_at）
 
 ## テストユーザー情報
 シーディング実行後、以下の3人のテストユーザーが作成されます：
@@ -157,6 +162,7 @@ php artisan storage:link
 ## URL
 - 開発環境：http://localhost/
 - phpMyAdmin：http://localhost:8080/
+- Mailpit（メール確認）：http://localhost:8026/
 
 ## テスト実行
 PHPUnitを使用したテストを実行する場合：

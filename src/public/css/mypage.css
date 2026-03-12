@@ -29,11 +29,61 @@
     display: block;
 }
 
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
 .username {
     font-size: 24px;
     font-weight: bold;
     margin: 0;
-    flex: 1;
+}
+
+.average-rating {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.average-rating .rating-stars {
+    color: #ffd700;
+    letter-spacing: 2px;
+}
+
+.average-rating .rating-count {
+    color: #999;
+    font-size: 12px;
+}
+
+.tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    padding: 2px 6px;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 10px;
+    margin-left: 4px;
+    flex-shrink: 0;
+}
+
+.product-notification-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    min-width: 20px;
+    padding: 4px 8px;
+    background-color: #e74c3c;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 10px;
+    text-align: center;
 }
 
 .edit-button {
@@ -58,6 +108,8 @@
 }
 
 .tab-label {
+    display: inline-flex;
+    align-items: center;
     padding: 15px 30px;
     cursor: pointer;
     position: relative;
@@ -71,12 +123,14 @@
 
 /* チェックされているタブを強調表示 */
 #tab-selling:checked ~ .tabs .tab-label[for="tab-selling"],
+#tab-transacting:checked ~ .tabs .tab-label[for="tab-transacting"],
 #tab-bought:checked ~ .tabs .tab-label[for="tab-bought"] {
     color: #333;
     font-weight: 500;
 }
 
 #tab-selling:checked ~ .tabs .tab-label[for="tab-selling"]::after,
+#tab-transacting:checked ~ .tabs .tab-label[for="tab-transacting"]::after,
 #tab-bought:checked ~ .tabs .tab-label[for="tab-bought"]::after {
     content: '';
     position: absolute;
@@ -105,13 +159,17 @@
     flex-shrink: 0;
 }
 
-/* ラジオボタンに応じて横スライド */
+/* ラジオボタンに応じて横スライド（3タブ対応） */
 #tab-selling:checked ~ .mypage-slider-container .mypage-slider-wrapper {
     transform: translateX(0);
 }
 
-#tab-bought:checked ~ .mypage-slider-container .mypage-slider-wrapper {
+#tab-transacting:checked ~ .mypage-slider-container .mypage-slider-wrapper {
     transform: translateX(-100%);
+}
+
+#tab-bought:checked ~ .mypage-slider-container .mypage-slider-wrapper {
+    transform: translateX(-200%);
 }
 
 .product-grid {
@@ -203,6 +261,18 @@
     object-fit: cover;
 }
 
+.product-image-placeholder {
+    width: 100%;
+    height: 100%;
+    min-height: 120px;
+    background: #e8e8e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 12px;
+}
+
 .sold-badge {
     position: absolute;
     top: 0;
@@ -213,6 +283,27 @@
     font-size: 16px;
     font-weight: bold;
     letter-spacing: 2px;
+}
+
+/* 取引中タブ：購入/出品バッジ */
+.transaction-role-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.transaction-role-badge.role-buyer {
+    background-color: #3498db;
+    color: white;
+}
+
+.transaction-role-badge.role-seller {
+    background-color: #27ae60;
+    color: white;
 }
 
 .product-name {

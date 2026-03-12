@@ -1,6 +1,28 @@
-# Mailtrap設定ガイド
+# メール設定ガイド
 
-このガイドでは、Mailtrapを使用したメール認証システムの設定方法を説明します。
+## Mailpit（ローカル開発・推奨）
+
+**認証不要**でメールをブラウザで確認できます。Mailtrapがうまく動かない場合はこちらを利用してください。
+
+### セットアップ
+
+1. **`.env` に以下を設定:**
+   ```env
+   MAIL_MAILER=mailpit
+   MAIL_FROM_ADDRESS=noreply@example.com
+   MAIL_FROM_NAME="${APP_NAME}"
+   ```
+
+2. **Docker を起動:**
+   ```bash
+   docker compose up -d
+   ```
+
+3. **メールの確認:**
+   - ユーザー登録などでメール送信後、ブラウザで **http://localhost:8026** を開く
+   - 届いたメールが一覧表示され、認証リンクをクリックしてメール認証を完了できる
+
+---
 
 ## Mailtrapアカウントの準備
 
@@ -15,7 +37,7 @@
 
 ```env
 MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailtrap.io
+MAIL_HOST=sandbox.smtp.mailtrap.io
 MAIL_PORT=2525
 MAIL_USERNAME=your_mailtrap_username
 MAIL_PASSWORD=your_mailtrap_password
@@ -24,7 +46,9 @@ MAIL_FROM_ADDRESS=noreply@example.com
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-**注意**: `MAIL_USERNAME`と`MAIL_PASSWORD`は、MailtrapのInbox設定画面に表示される「Username」と「Password」を使用してください。
+**重要**: 
+- ホストは `sandbox.smtp.mailtrap.io` を使用してください（`smtp.mailtrap.io` は非推奨の可能性があります）
+- `MAIL_USERNAME`と`MAIL_PASSWORD`は、Mailtrapの **Email Testing → Sandboxes → あなたのSandbox → Integration → SMTP** に表示される値をコピーしてください
 
 ## メール認証機能について
 
@@ -43,14 +67,72 @@ MAIL_FROM_NAME="${APP_NAME}"
 
 ## トラブルシューティング
 
+### Swift_TransportException: "Expected response code 250 but got an empty response"
+
+このエラーはSMTP認証に失敗したときに発生します。
+
+**対処法（順に試してください）:**
+
+1. **認証情報の取得元を確認**
+   - **Email Testing**（サンドボックス）の認証情報を使用しているか確認
+   - Mailtrap → **Email Testing** → **Inboxes** → 対象Inbox → **SMTP Settings** タブ
+   - 「Email API」の認証情報は **sandbox.smtp.mailtrap.io** では使えません
+
+2. **.env に以下を明示的に設定**
+   ```env
+   MAIL_ENCRYPTION=null
+   ```
+   ポート2525では暗号化なしが安定することがあります。
+
+3. **認証情報を再コピー**
+   - MailtrapのSMTP Settingsから **Username** と **Password** を再コピー
+   - パスワードに余分なスペースがないか確認
+
+4. **別のポートを試す**
+   ```env
+   MAIL_PORT=587
+   MAIL_ENCRYPTION=tls
+   ```
+
+5. **設定キャッシュをクリア**
+   ```bash
+   php artisan config:clear
+   ```
+
+**エラー詳細を確認する:**
+```bash
+docker compose exec php php artisan mail:diagnose --send-test --strict
+```
+
 ### メールが届かない場合
 
-- `.env`ファイルの設定が正しいか確認
-- MailtrapのInboxにメールが届いているか確認（スパムフォルダも確認）
-- `php artisan config:clear`で設定キャッシュをクリア
+**診断コマンドを実行してください:**
+
+```bash
+docker compose exec php php artisan mail:diagnose
+```
+
+テストメール送信で動作確認:
+
+```bash
+docker compose exec php php artisan mail:diagnose --send-test
+```
+
+**ステップバイステップ確認:**
+
+| ステップ | 確認内容 | 対処法 |
+|---------|----------|--------|
+| 1 | MailtrapのInbox | **Email Testing** → **Inboxes** → 対象のInboxを開く（**Email API**ではなく**Email Testing**） |
+| 2 | メールがInboxに表示されるか | 届いていれば設定OK。届いていなければ次へ |
+| 3 | `.env`のMAIL_* | `php artisan mail:diagnose`で設定値を確認 |
+| 4 | 設定キャッシュ | `php artisan config:clear` を実行してから再登録 |
+| 5 | failoverでlogに落ちているか | `storage/logs/laravel.log` の末尾を確認（SMTP失敗時にlogに記録される） |
+| 6 | 認証メール再送 | 認証待ち画面の「認証メールを再送する」ボタンを押す |
+
+**重要**: Mailtrapは実際のメールアドレスには送信しません。必ず [mailtrap.io](https://mailtrap.io) にログインし、**Email Testing** のInboxでメールを確認してください。
 
 ### 認証リンクが機能しない場合
 
-- `APP_URL`が正しく設定されているか確認
+- `APP_URL`が正しく設定されているか確認（Docker経由でアクセスする場合は `http://localhost` でOK）
 - Fortifyの設定で`emailVerification()`が有効になっているか確認（`config/fortify.php`）
 

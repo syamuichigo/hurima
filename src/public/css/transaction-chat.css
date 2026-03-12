@@ -136,13 +136,27 @@
 }
 
 .message {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .message-content {
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+/* 自分のメッセージ：右寄せ */
+.message-self .message-content {
+    align-items: flex-end;
+}
+
+.message-self .message-header {
+    flex-direction: row-reverse;
+}
+
+/* 相手のメッセージ：左寄せ */
+.message-other .message-content {
+    align-items: flex-start;
 }
 
 .message-header {
@@ -156,13 +170,12 @@
 .message-bubble {
     padding: 10px 12px;
     border-radius: 10px;
-    max-width: 70%;
+    max-width: 50%;
     word-break: break-word;
 }
 
 .message-bubble-self {
     background: #e9f5ff;
-    margin-left: auto;
 }
 
 .message-bubble-other {
@@ -175,10 +188,16 @@
     margin-top: 6px;
 }
 
+/* 編集・削除ボタン：吹き出しの右下 */
 .message-actions {
     display: flex;
     gap: 8px;
     font-size: 12px;
+    margin-top: 2px;
+}
+
+.message-self .message-actions {
+    justify-content: flex-end;
 }
 
 .message-action-link {

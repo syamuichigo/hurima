@@ -46,7 +46,7 @@
                         {{ optional($otherUser)->display_name ?? optional($otherUser)->username ?? 'ユーザー名' }}さんとの取引画面
                     </h1>
                 </div>
-                @if(isset($isBuyer) && $isBuyer && isset($buyerCanComplete) && $buyerCanComplete)
+                @if(isset($buyerCanComplete) && $buyerCanComplete)
                 <button class="complete-transaction-button" onclick="openRatingModal()">
                     取引を完了する
                 </button>
@@ -235,8 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!modal) return;
 
     @php
+        // エラー時のみ自動表示。出品者は購入者評価後、購入者はボタン押下時のみ
         $hasRatingErrors = $errors->any() || session('error');
-        $shouldAutoOpen = $hasRatingErrors || (isset($shouldShowRatingModal) && $shouldShowRatingModal);
+        $shouldAutoOpen = $hasRatingErrors || (isset($shouldAutoOpenRatingModal) && $shouldAutoOpenRatingModal);
     @endphp
     @if($shouldAutoOpen)
     openRatingModal();

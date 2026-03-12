@@ -45,6 +45,16 @@ return [
             'auth_mode' => null,
         ],
 
+        'mailpit' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_HOST', 'mailpit'),
+            'port' => env('MAIL_PORT', 1025),
+            'encryption' => null,
+            'username' => null,
+            'password' => null,
+            'timeout' => null,
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

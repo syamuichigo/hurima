@@ -19,9 +19,20 @@
                 <img src="{{ asset($profileImage) }}" alt="プロフィール画像">
             @endif
         </div>
-        <h1 class="username">
-            {{ $user->profile->name ?? $user->name }}
-        </h1>
+        <div class="profile-info">
+            <h1 class="username">
+                {{ $user->profile->name ?? $user->name }}
+            </h1>
+            @if(isset($avgRating) && $avgRating !== null)
+            <div class="average-rating">
+                @php
+                    $filled = min(5, max(0, (int) round($avgRating)));
+                    $empty = 5 - $filled;
+                @endphp
+                <span class="rating-stars">{{ str_repeat('★', $filled) }}{{ str_repeat('☆', $empty) }}</span>
+            </div>
+            @endif
+        </div>
         <form method="POST" action="/profile" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="id" value="{{ $user->id }}">
@@ -30,10 +41,17 @@
     </div>
 
     <input type="radio" name="mypage_tab" id="tab-selling" class="mypage-tab-radio" checked>
+    <input type="radio" name="mypage_tab" id="tab-transacting" class="mypage-tab-radio">
     <input type="radio" name="mypage_tab" id="tab-bought" class="mypage-tab-radio">
 
     <div class="tabs">
         <label for="tab-selling" class="tab-label">出品した商品</label>
+        <label for="tab-transacting" class="tab-label">
+            取引中
+            @if(isset($transactingBadgeCount) && $transactingBadgeCount > 0)
+            <span class="tab-badge">{{ $transactingBadgeCount }}</span>
+            @endif
+        </label>
         <label for="tab-bought" class="tab-label">購入した商品</label>
     </div>
 
@@ -66,6 +84,44 @@
                 @endif
             </div>
 
+            {{-- 取引中パネル --}}
+            <div class="mypage-slider-panel" id="transacting-panel">
+                <div class="product-grid">
+                    @if ($transactions->isEmpty())
+                        <div class="empty-message">取引中の商品がありません</div>
+                    @else
+                        @foreach ($transactions as $tx)
+                        <a href="/transaction-chat/{{ $tx->id }}" class="product-card transaction-card">
+                            <div class="product-image-wrapper">
+                                @php
+                                    $txImage = optional($tx->content)->image ?? $tx->image ?? null;
+                                @endphp
+                                @if($txImage)
+                                    <img src="{{ asset($txImage) }}" alt="{{ $tx->content->name ?? $tx->name ?? '商品' }}" class="product-image">
+                                @else
+                                    <div class="product-image-placeholder">商品画像</div>
+                                @endif
+                                @if(isset($unreadByPurchase) && ($unreadByPurchase[$tx->id] ?? 0) > 0)
+                                <span class="product-notification-badge">{{ $unreadByPurchase[$tx->id] }}</span>
+                                @endif
+                                <span class="transaction-role-badge {{ $tx->is_buyer ? 'role-buyer' : 'role-seller' }}">
+                                    {{ $tx->is_buyer ? '購入' : '出品' }}
+                                </span>
+                            </div>
+                            <div class="product-name">
+                                {{ $tx->content->name ?? $tx->name ?? '商品名' }}
+                            </div>
+                        </a>
+                        @endforeach
+                    @endif
+                </div>
+                @if (!$transactions->isEmpty())
+                <div class="pagination-wrapper">
+                    {{ $transactions->links() }}
+                </div>
+                @endif
+            </div>
+
             {{-- 購入した商品パネル --}}
             <div class="mypage-slider-panel" id="bought-panel">
                 <div class="product-grid">
@@ -73,9 +129,21 @@
                         <div class="empty-message">購入した商品がありません</div>
                     @else
                         @foreach ($purchases as $purchase)
-                        <a href="/item/{{ $purchase->id }}" class="product-card">
-                            <img src="{{ asset($purchase->image) }}" alt="{{ $purchase->name }}" class="product-image">
-                            <div class="product-name">{{ $purchase->name }}</div>
+                        @php
+                            $purchaseContent = optional($purchase->content);
+                            $purchaseImage = $purchaseContent->image ?? $purchase->image ?? null;
+                            $purchaseName = $purchaseContent->name ?? $purchase->name ?? '商品名';
+                            $itemLink = $purchase->content_id ? "/item/{$purchase->content_id}" : "#";
+                        @endphp
+                        <a href="{{ $itemLink }}" class="product-card">
+                            <div class="product-image-wrapper">
+                                @if($purchaseImage)
+                                <img src="{{ asset($purchaseImage) }}" alt="{{ $purchaseName }}" class="product-image">
+                                @else
+                                <div class="product-image-placeholder">商品画像</div>
+                                @endif
+                            </div>
+                            <div class="product-name">{{ $purchaseName }}</div>
                         </a>
                         @endforeach
                     @endif
