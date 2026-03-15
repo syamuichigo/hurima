@@ -41,23 +41,23 @@
     </div>
 
     <input type="radio" name="mypage_tab" id="tab-selling" class="mypage-tab-radio" checked>
-    <input type="radio" name="mypage_tab" id="tab-transacting" class="mypage-tab-radio">
     <input type="radio" name="mypage_tab" id="tab-bought" class="mypage-tab-radio">
+    <input type="radio" name="mypage_tab" id="tab-transacting" class="mypage-tab-radio">
 
     <div class="tabs">
         <label for="tab-selling" class="tab-label">出品した商品</label>
+        <label for="tab-bought" class="tab-label">購入した商品</label>
         <label for="tab-transacting" class="tab-label">
             取引中
             @if(isset($transactingBadgeCount) && $transactingBadgeCount > 0)
             <span class="tab-badge">{{ $transactingBadgeCount }}</span>
             @endif
         </label>
-        <label for="tab-bought" class="tab-label">購入した商品</label>
     </div>
 
     <div class="mypage-slider-container">
         <div class="mypage-slider-wrapper">
-            {{-- 出品した商品パネル --}}
+            {{-- 出品した商品パネル（1番目） --}}
             <div class="mypage-slider-panel" id="selling-panel">
                 <div class="product-grid">
                     @if ($listings->isEmpty())
@@ -84,7 +84,41 @@
                 @endif
             </div>
 
-            {{-- 取引中パネル --}}
+            {{-- 購入した商品パネル（2番目） --}}
+            <div class="mypage-slider-panel" id="bought-panel">
+                <div class="product-grid">
+                    @if ($purchases->isEmpty())
+                        <div class="empty-message">購入した商品がありません</div>
+                    @else
+                        @foreach ($purchases as $purchase)
+                        @php
+                            $purchaseContent = optional($purchase->content);
+                            $purchaseImage = $purchaseContent->image ?? $purchase->image ?? null;
+                            $purchaseName = $purchaseContent->name ?? $purchase->name ?? '商品名';
+                            $itemLink = $purchase->content_id ? "/item/{$purchase->content_id}" : "#";
+                        @endphp
+                        <a href="{{ $itemLink }}" class="product-card">
+                            <div class="product-image-wrapper">
+                                @if($purchaseImage)
+                                <img src="{{ asset($purchaseImage) }}" alt="{{ $purchaseName }}" class="product-image">
+                                @else
+                                <div class="product-image-placeholder">商品画像</div>
+                                @endif
+                            </div>
+                            <div class="product-name">{{ $purchaseName }}</div>
+                        </a>
+                        @endforeach
+                    @endif
+                </div>
+                {{-- 購入した商品のページネーション --}}
+                @if (!$purchases->isEmpty())
+                <div class="pagination-wrapper">
+                    {{ $purchases->links() }}
+                </div>
+                @endif
+            </div>
+
+            {{-- 取引中パネル（3番目） --}}
             <div class="mypage-slider-panel" id="transacting-panel">
                 <div class="product-grid">
                     @if ($transactions->isEmpty())
@@ -118,40 +152,6 @@
                 @if (!$transactions->isEmpty())
                 <div class="pagination-wrapper">
                     {{ $transactions->links() }}
-                </div>
-                @endif
-            </div>
-
-            {{-- 購入した商品パネル --}}
-            <div class="mypage-slider-panel" id="bought-panel">
-                <div class="product-grid">
-                    @if ($purchases->isEmpty())
-                        <div class="empty-message">購入した商品がありません</div>
-                    @else
-                        @foreach ($purchases as $purchase)
-                        @php
-                            $purchaseContent = optional($purchase->content);
-                            $purchaseImage = $purchaseContent->image ?? $purchase->image ?? null;
-                            $purchaseName = $purchaseContent->name ?? $purchase->name ?? '商品名';
-                            $itemLink = $purchase->content_id ? "/item/{$purchase->content_id}" : "#";
-                        @endphp
-                        <a href="{{ $itemLink }}" class="product-card">
-                            <div class="product-image-wrapper">
-                                @if($purchaseImage)
-                                <img src="{{ asset($purchaseImage) }}" alt="{{ $purchaseName }}" class="product-image">
-                                @else
-                                <div class="product-image-placeholder">商品画像</div>
-                                @endif
-                            </div>
-                            <div class="product-name">{{ $purchaseName }}</div>
-                        </a>
-                        @endforeach
-                    @endif
-                </div>
-                {{-- 購入した商品のページネーション --}}
-                @if (!$purchases->isEmpty())
-                <div class="pagination-wrapper">
-                    {{ $purchases->links() }}
                 </div>
                 @endif
             </div>

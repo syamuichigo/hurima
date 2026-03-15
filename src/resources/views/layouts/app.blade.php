@@ -25,7 +25,7 @@
                     <img src="{{ asset($encodedPath) }}" alt="COACHTECHヘッダーロゴ" class="logo-img">
                 </a>
             </div>
-            @unless(request()->is('register') || request()->is('login') || request()->is('login1'))
+            @unless(request()->is('register') || request()->is('login') || request()->is('login1') || request()->is('transaction-chat*'))
             <div class="search-box">
                 <form method="GET" action="/search" class="search-form">
                     <input type="text" name="q" placeholder="なにをお探しですか？" class="search-input" value="{{ request('q') }}">
@@ -33,7 +33,7 @@
                 </form>
             </div>
             @endunless
-            @unless(request()->is('register') || request()->is('login') || request()->is('login1'))
+            @unless(request()->is('register') || request()->is('login') || request()->is('login1') || request()->is('transaction-chat*'))
             <nav class="header-nav">
                 @auth
                 <form method="POST" action="/logout" style="display: inline;">

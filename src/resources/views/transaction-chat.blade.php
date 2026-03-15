@@ -8,7 +8,7 @@
 <div class="transaction-chat-container">
     <div class="transaction-chat-wrapper">
         <aside class="sidebar">
-            <h2 class="sidebar-title">取引中のアイテム</h2>
+            <h2 class="sidebar-title">その他の取引</h2>
             <div class="sidebar-transactions">
                 @if(isset($otherTransactions) && $otherTransactions->count() > 0)
                     @foreach($otherTransactions as $otherTransaction)
@@ -17,7 +17,7 @@
                         </a>
                     @endforeach
                 @else
-                    <div class="sidebar-empty">取引中のアイテムがありません</div>
+                    <div class="sidebar-empty">その他の取引がありません</div>
                 @endif
             </div>
         </aside>
@@ -163,7 +163,7 @@ if ($profileImage && strpos($profileImage, 'storage/') !== 0 && strpos($profileI
             <div class="message-input-section">
                 <form action="/transaction-chat/{{ isset($purchase) ? $purchase->id : '' }}/message" method="POST" class="message-form" enctype="multipart/form-data">
                     @csrf
-                    <input type="text" name="message" placeholder="取引メッセージを記入してください" class="message-input">
+                    <input type="text" name="message" id="message-input" placeholder="取引メッセージを記入してください" class="message-input">
                     <button type="button" class="image-upload-button" onclick="document.getElementById('image-input').click()">
                         画像を追加
                     </button>
@@ -233,6 +233,19 @@ function openRatingModal() {
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('ratingModal');
     if (!modal) return;
+
+    @if(isset($purchase))
+    // 本文入力の保持：サイドバーで他取引へ遷移しても戻ったときに復元
+    const purchaseId = {{ $purchase->id }};
+    const messageInput = document.getElementById('message-input');
+    const draftKey = 'transaction-draft-' + purchaseId;
+    if (messageInput) {
+        const saved = localStorage.getItem(draftKey);
+        if (saved) messageInput.value = saved;
+        messageInput.addEventListener('input', () => localStorage.setItem(draftKey, messageInput.value));
+    }
+    document.querySelector('.message-form')?.addEventListener('submit', () => localStorage.removeItem(draftKey));
+    @endif
 
     @php
         // エラー時のみ自動表示。出品者は購入者評価後、購入者はボタン押下時のみ

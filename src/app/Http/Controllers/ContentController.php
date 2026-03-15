@@ -171,14 +171,14 @@ class ContentController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20, ['*'], 'purchases_page');
 
-        // 取引中: 未完了の取引（status != 完了）
+        // 取引中: 未完了の取引。新規メッセージが来た順（最新メッセージが新しいものを左に）で並べ替え
         $transactions = Purchase::where(function ($q) use ($sellerContentIds) {
             $q->where('user_id', auth()->user()->id)
                 ->orWhereIn('content_id', $sellerContentIds);
         })
             ->where('status', '!=', '完了')
             ->with('content')
-            ->orderByDesc('created_at')
+            ->orderByRaw('COALESCE((SELECT MAX(created_at) FROM transaction_messages WHERE transaction_messages.purchase_id = purchase.id), purchase.created_at) DESC')
             ->paginate(20, ['*'], 'transactions_page');
 
         foreach ($transactions as $tx) {
@@ -191,9 +191,12 @@ class ContentController extends Controller
         $avgRating = $avgRating ? round($avgRating, 1) : null;
         $ratingCount = TransactionRating::where('rated_user_id', auth()->id())->count();
 
-        // バッジ: 取引中の未読通知数のみ
+        // バッジ: 取引中の未読通知のみ（完了した取引の通知は含めない）
         $transactingBadgeCount = TransactionNotification::where('user_id', auth()->id())
             ->whereNull('read_at')
+            ->whereHas('purchase', function ($q) {
+                $q->where('status', '!=', '完了');
+            })
             ->count();
 
         // 取引ごとの未読通知数（取引カード用）

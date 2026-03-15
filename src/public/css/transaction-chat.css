@@ -1,47 +1,65 @@
 /* Basic layout for transaction chat */
 .transaction-chat-container {
-    padding: 24px;
+    padding: 0;
+    min-height: calc(100vh - 70px);
 }
 
 .transaction-chat-wrapper {
     display: flex;
-    gap: 24px;
-    align-items: flex-start;
+    gap: 0;
+    align-items: stretch;
+    min-height: calc(100vh - 70px);
 }
 
+/* その他の取引欄：参考画どおりグレー背景・タイトルは白文字 */
 .sidebar {
-    width: 260px;
-    background: #fff;
-    border: 1px solid #e5e5e5;
-    border-radius: 8px;
-    padding: 16px;
+    width: 280px;
+    flex-shrink: 0;
+    background: #bdbdbd;
+    border: none;
+    border-radius: 0;
+    padding: 24px 20px;
 }
 
 .sidebar-title {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 12px;
+    color: #fff;
+    margin: 0 0 16px 0;
+}
+
+.sidebar-transactions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .sidebar-transaction-item {
     display: block;
-    padding: 10px 12px;
-    border-radius: 6px;
-    color: #333;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #e8e8e8;
+    color: #000;
+    font-size: 14px;
     text-decoration: none;
+    border: none;
 }
 
 .sidebar-transaction-item:hover {
-    background: #f5f5f5;
+    background: #d8d8d8;
 }
 
 .sidebar-empty {
-    color: #888;
+    color: #333;
     font-size: 14px;
+    padding: 14px 0;
+    line-height: 1.5;
 }
 
 .main-content {
     flex: 1;
+    padding: 24px;
+    background: #fff;
 }
 
 .transaction-header {
@@ -224,7 +242,15 @@
     padding: 10px;
 }
 
-.image-upload-button,
+.image-upload-button {
+    border: none;
+    background: #ff6b6b;
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 .message-send-button {
     border: none;
     background: #333;
@@ -264,7 +290,7 @@
 }
 
 .rating-modal-content {
-    background: #fff;
+    background: #f5f0e6;
     padding: 24px;
     border-radius: 8px;
     width: 360px;

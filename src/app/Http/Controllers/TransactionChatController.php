@@ -9,6 +9,8 @@ use App\Models\TransactionRating;
 use App\Models\User;
 use App\Models\TransactionNotification;
 use App\Mail\RatingReceivedMail;
+use App\Http\Requests\StoreTransactionMessageRequest;
+use App\Http\Requests\UpdateTransactionMessageRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -98,24 +100,13 @@ class TransactionChatController extends Controller
         ));
     }
 
-    public function storeMessage(Request $request, $purchaseId)
+    public function storeMessage(StoreTransactionMessageRequest $request, $purchaseId)
     {
         $purchase = Purchase::findOrFail($purchaseId);
         $this->ensureUserCanAccess($purchase);
 
-        $request->validate([
-            'message' => 'nullable|string|max:1000',
-            'image' => 'nullable|image|max:2048',
-        ]);
-
-        $hasMessage = $request->filled('message');
-        $hasImage = $request->hasFile('image');
-        if (!$hasMessage && !$hasImage) {
-            return redirect()->back()->with('error', 'メッセージか画像のどちらかを入力してください');
-        }
-
         $imagePath = null;
-        if ($hasImage) {
+        if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('transaction-messages', 'public');
         }
 
@@ -140,7 +131,7 @@ class TransactionChatController extends Controller
         return redirect()->route('transaction.chat', ['purchaseId' => $purchase->id]);
     }
 
-    public function updateMessage(Request $request, $purchaseId, $messageId)
+    public function updateMessage(UpdateTransactionMessageRequest $request, $purchaseId, $messageId)
     {
         $purchase = Purchase::findOrFail($purchaseId);
         $this->ensureUserCanAccess($purchase);
@@ -152,10 +143,6 @@ class TransactionChatController extends Controller
         if ($message->user_id !== auth()->id()) {
             abort(403, '編集権限がありません');
         }
-
-        $request->validate([
-            'message' => 'required|string|max:1000',
-        ]);
 
         $message->message = $request->input('message');
         $message->save();

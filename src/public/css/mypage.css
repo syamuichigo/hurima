@@ -123,15 +123,15 @@
 
 /* チェックされているタブを強調表示 */
 #tab-selling:checked ~ .tabs .tab-label[for="tab-selling"],
-#tab-transacting:checked ~ .tabs .tab-label[for="tab-transacting"],
-#tab-bought:checked ~ .tabs .tab-label[for="tab-bought"] {
+#tab-bought:checked ~ .tabs .tab-label[for="tab-bought"],
+#tab-transacting:checked ~ .tabs .tab-label[for="tab-transacting"] {
     color: #333;
     font-weight: 500;
 }
 
 #tab-selling:checked ~ .tabs .tab-label[for="tab-selling"]::after,
-#tab-transacting:checked ~ .tabs .tab-label[for="tab-transacting"]::after,
-#tab-bought:checked ~ .tabs .tab-label[for="tab-bought"]::after {
+#tab-bought:checked ~ .tabs .tab-label[for="tab-bought"]::after,
+#tab-transacting:checked ~ .tabs .tab-label[for="tab-transacting"]::after {
     content: '';
     position: absolute;
     bottom: -1px;
@@ -159,16 +159,16 @@
     flex-shrink: 0;
 }
 
-/* ラジオボタンに応じて横スライド（3タブ対応） */
+/* ラジオボタンに応じて横スライド（順: 出品 → 購入 → 取引中） */
 #tab-selling:checked ~ .mypage-slider-container .mypage-slider-wrapper {
     transform: translateX(0);
 }
 
-#tab-transacting:checked ~ .mypage-slider-container .mypage-slider-wrapper {
+#tab-bought:checked ~ .mypage-slider-container .mypage-slider-wrapper {
     transform: translateX(-100%);
 }
 
-#tab-bought:checked ~ .mypage-slider-container .mypage-slider-wrapper {
+#tab-transacting:checked ~ .mypage-slider-container .mypage-slider-wrapper {
     transform: translateX(-200%);
 }
 
@@ -322,6 +322,30 @@
     background-color: #fafafa;
     border-radius: 8px;
     border: 1px dashed #ddd;
+}
+
+/* タブレット (768-850px) でマイページヘッダー（プロフィール部）が崩れないように */
+@media (max-width: 850px) {
+    .container {
+        padding: 32px 20px;
+    }
+
+    .profile-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .tab-label {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 768px) {
